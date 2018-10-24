@@ -24,7 +24,8 @@ scalacOptions ++= Seq(
   "-Ywarn-value-discard",
   "-Xfuture")
 
-libraryDependencies ++= Seq()
-
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+)
 // mainClass := Some("com.despegar.workshop.scala.Run")
 
