@@ -1,19 +1,19 @@
 package com.despegar.scala.workshop.soluciones.dia2
 
-trait MyOptional[+A] {
+trait MyOption[+A] {
   def get: A
   def getOrElse[B >: A](orElse: => B): B
   def isEmpty: Boolean
   def nonEmpty: Boolean = !isEmpty
   def isDefined: Boolean = nonEmpty
 
-  def map[B](f: A => B): MyOptional[B]
+  def map[B](f: A => B): MyOption[B]
 
-  def flatMap[B](f: A => MyOptional[B]): MyOptional[B]
+  def flatMap[B](f: A => MyOption[B]): MyOption[B]
 
-  def filter(f: A => Boolean): MyOptional[A]
+  def filter(f: A => Boolean): MyOption[A]
 
-  def collect[B](f: PartialFunction[A, B]): MyOptional[B]
+  def collect[B](f: PartialFunction[A, B]): MyOption[B]
 
   def forall(f: A => Boolean): Boolean = {
     if (isDefined) f(get) else true
@@ -31,20 +31,20 @@ trait MyOptional[+A] {
 
 }
 
-class MySome[A](val get: A) extends MyOptional[A] {
+class MySome[A](val get: A) extends MyOption[A] {
   def isEmpty: Boolean = false
 
   def getOrElse[B >: A](orElse: => B): B = get
 
-  def map[B](f: A => B): MyOptional[B] = new MySome(f(get))
+  def map[B](f: A => B): MyOption[B] = new MySome(f(get))
 
-  def flatMap[B](f: A => MyOptional[B]): MyOptional[B] = f(get)
+  def flatMap[B](f: A => MyOption[B]): MyOption[B] = f(get)
 
-  def filter(f: A => Boolean): MyOptional[A] = {
+  def filter(f: A => Boolean): MyOption[A] = {
     if (f(get)) this else MyNone
   }
 
-  def collect[B](f: PartialFunction[A, B]): MyOptional[B] = {
+  def collect[B](f: PartialFunction[A, B]): MyOption[B] = {
     if (f.isDefinedAt(get)) new MySome(f(get)) else MyNone
   }
 
@@ -56,19 +56,19 @@ class MySome[A](val get: A) extends MyOptional[A] {
   override def toString: String = s"MySome($get)"
 }
 
-case object MyNone extends MyOptional[Nothing] {
+case object MyNone extends MyOption[Nothing] {
   def get = throw new RuntimeException("MyNone.get")
   def isEmpty = true
 
   def getOrElse[B >: Nothing](orElse: => B): B = orElse
 
-  def map[B](f: Nothing => B): MyOptional[B] = this
+  def map[B](f: Nothing => B): MyOption[B] = this
 
-  def flatMap[B](f: Nothing => MyOptional[B]): MyOptional[B] = MyNone
+  def flatMap[B](f: Nothing => MyOption[B]): MyOption[B] = MyNone
 
-  def filter(f: Nothing => Boolean): MyOptional[Nothing] = this
+  def filter(f: Nothing => Boolean): MyOption[Nothing] = this
 
-  def collect[B](f: PartialFunction[Nothing, B]): MyOptional[B] = MyNone
+  def collect[B](f: PartialFunction[Nothing, B]): MyOption[B] = MyNone
 
   def foreach(f: Nothing => Unit): Unit = ()
 

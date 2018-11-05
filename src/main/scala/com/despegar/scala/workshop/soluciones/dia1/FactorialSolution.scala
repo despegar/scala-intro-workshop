@@ -2,7 +2,7 @@ package com.despegar.scala.workshop.soluciones.dia1
 
 import scala.annotation.tailrec
 
-object Factorial {
+object FactorialSolution {
 
   def calculateInt(num: Int): Int = num match {
     case n if n < 0 => throw new IllegalArgumentException("Only positive integers accepted")
