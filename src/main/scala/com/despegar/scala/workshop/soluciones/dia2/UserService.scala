@@ -74,12 +74,16 @@ object AlfredRestClient {
 object UserService {
 
   // Obtener un usuario
-  def getUser(userName: String): User = UserCache.getUser(userName)
+  def getUser(userName: String): Try[User] = Try(UserCache.getUser(userName))
 
   // Obtener el monto total de todas las compras de un Usuario
-  def getPurchaseTotalAmount(userName: String, currency: String): BigDecimal =
-    PurchaseRestClient.getPurchases(getUser(userName)).foldRight(BigDecimal(0)) {
-      case (purchase, total) => total + purchase.amount * AlfredRestClient.getRate(currency)
-    }
+  def getPurchaseTotalAmount(userName: String, currency: String): Try[BigDecimal] = {
+    getUser(userName)
+      .flatMap(user => Try {
+        PurchaseRestClient.getPurchases(user).foldRight(BigDecimal(0)) {
+          case (purchase, total) => total + purchase.amount * AlfredRestClient.getRate(currency)
+        }
+      })
+  }
 
 }

@@ -130,6 +130,8 @@ object UserService {
   /**
     * Devuelve un usuario
     * Busca el usuario en la cache, y si no está, lo busca en la base
+    * O directamente cambiar el cache para que si no tiene el usuario, que vaya a la base,
+    * y desde aca solo se llama al cache
     * @param userName Name of user
     * @return
     */
