@@ -1,79 +1,73 @@
 package com.despegar.scala.workshop.soluciones.dia2
 
-trait MyOption[+A] {
-  def get: A
-  def getOrElse[B >: A](orElse: => B): B
+sealed trait MyOptionSol[+A] {
   def isEmpty: Boolean
   def nonEmpty: Boolean = !isEmpty
+  def getOrElse[B >: A](orElse: => B): B
+  def orElse[B >: A](ob: => MyOptionSol[B]): MyOptionSol[B] = this match {
+    case MyNoneSol => ob
+    case _         => this
+  }
+
   def isDefined: Boolean = nonEmpty
 
-  def map[B](f: A => B): MyOption[B]
-
-  def flatMap[B](f: A => MyOption[B]): MyOption[B]
-
-  def filter(f: A => Boolean): MyOption[A]
-
-  def collect[B](f: PartialFunction[A, B]): MyOption[B]
-
-  def forall(f: A => Boolean): Boolean = {
-    if (isDefined) f(get) else true
+  def map[B](f: A => B): MyOptionSol[B] = this match {
+    case MyNoneSol        => MyNoneSol
+    case MySomeSol(value) => MyOptionSol(f(value))
   }
 
-  def exists(f: A => Boolean): Boolean = !forall(_ => !f(get))
-
-  def foreach(f: A => Unit): Unit
-
-  def foldLeft[Z, B >: A](z: Z)(f: (B, Z) => Z): Z
-
-  def contains[B >: A](e: B): Boolean = if (isDefined) e == get else false
-
-  def toList: List[A] = if (isDefined) List(get) else Nil
-
-}
-
-class MySome[A](val get: A) extends MyOption[A] {
-  def isEmpty: Boolean = false
-
-  def getOrElse[B >: A](orElse: => B): B = get
-
-  def map[B](f: A => B): MyOption[B] = new MySome(f(get))
-
-  def flatMap[B](f: A => MyOption[B]): MyOption[B] = f(get)
-
-  def filter(f: A => Boolean): MyOption[A] = {
-    if (f(get)) this else MyNone
+  def flatMap[B](f: A => MyOptionSol[B]): MyOptionSol[B] = this match {
+    case MyNoneSol        => MyNoneSol
+    case MySomeSol(value) => f(value)
   }
 
-  def collect[B](f: PartialFunction[A, B]): MyOption[B] = {
-    if (f.isDefinedAt(get)) new MySome(f(get)) else MyNone
+  def filter(f: A => Boolean): MyOptionSol[A] = this match {
+    case MySomeSol(value) if f(value) => MySomeSol(value)
+    case _ => MyNoneSol
   }
 
-  def foreach(f: A => Unit): Unit = f(get)
+  def forall(f: A => Boolean): Boolean =  this match {
+    case MySomeSol(value) => f(value)
+    case _ => true
+  }
 
-  def foldLeft[Z, B >: A](z: Z)(f: (B, Z) => Z): Z = f(get, z)
+  def exists(f: A => Boolean): Boolean = !forall(x => !f(x))
 
+  def foreach(f: A => Unit): Unit = this match {
+    case MySomeSol(value) => f(value)
+    case _ => ()
+  }
 
-  override def toString: String = s"MySome($get)"
+  def foldLeft[Z, B >: A](z: Z)(f: (B, Z) => Z): Z = this match {
+    case MySomeSol(value) => f(value, z)
+    case _ => z
+  }
+
+  def contains[B >: A](e: B): Boolean = this match {
+    case MySomeSol(value) if e == value => true
+    case _ => false
+  }
+
+  def toList: List[A] = this match {
+    case MySomeSol(value) => List(value)
+    case _ => Nil
+  }
 }
 
-case object MyNone extends MyOption[Nothing] {
-  def get = throw new RuntimeException("MyNone.get")
-  def isEmpty = true
+object MyOptionSol {
+  def apply[A](value: A): MyOptionSol[A] =
+    if (value == null) MyNoneSol
+    else MySomeSol(value)
 
-  def getOrElse[B >: Nothing](orElse: => B): B = orElse
-
-  def map[B](f: Nothing => B): MyOption[B] = this
-
-  def flatMap[B](f: Nothing => MyOption[B]): MyOption[B] = MyNone
-
-  def filter(f: Nothing => Boolean): MyOption[Nothing] = this
-
-  def collect[B](f: PartialFunction[Nothing, B]): MyOption[B] = MyNone
-
-  def foreach(f: Nothing => Unit): Unit = ()
-
-  def foldLeft[Z, B >: Nothing](z: Z)(f: (B, Z) => Z): Z = z
-
-  override def toString: String = s"MyNone"
+  def empty[A]: MyOptionSol[A] = MyNoneSol
 }
 
+final case class MySomeSol[A](value: A) extends MyOptionSol[A] {
+  override def isEmpty: Boolean = false
+  override def getOrElse[B >: A](orElse: => B): B = value
+}
+
+case object MyNoneSol extends MyOptionSol[Nothing] {
+  override def isEmpty: Boolean = true
+  override def getOrElse[B >: Nothing](orElse: => B): B = orElse
+}

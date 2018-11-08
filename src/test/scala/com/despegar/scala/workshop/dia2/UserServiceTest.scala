@@ -1,6 +1,5 @@
-package com.despegar.scala.workshop.dia1
+package com.despegar.scala.workshop.dia2
 
-import com.despegar.scala.workshop.dia2._
 import org.scalatest._
 
 class UserServiceTest extends FlatSpec with Matchers {
