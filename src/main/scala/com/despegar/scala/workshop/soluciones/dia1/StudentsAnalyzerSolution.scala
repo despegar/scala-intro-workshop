@@ -72,7 +72,7 @@ object StudentsAnalyzer extends App {
     * - toStream
     */
 
-  def students(ids: Seq[Int]): Seq[Student] = _students.filter(student => ids.contains(student.id))
+  def students(ids: Set[Int]): Seq[Student] = _students.filter(student => ids.contains(student.id))
 
   def student(id: Int): Option[Student] = _students.find(student => id == student.id)
 
@@ -89,7 +89,7 @@ object StudentsAnalyzer extends App {
 
   def nerdIds: Set[Int] = courseStudentNerds.map(cs => cs.studentId).toSet
 
-  def nerds: Seq[Student] = nerdIds.flatMap(id => student(id)).toSeq
+  def nerds: Seq[Student] = students(nerdIds)
 
   /**
     * A partir de ahora, va a subir un poco la complejidad...
@@ -98,7 +98,12 @@ object StudentsAnalyzer extends App {
   /**
     * first nerd found
     */
-  def firstNerd: Option[Student] = _courseStudent.find(cs => isNerd(cs.grade)).flatMap(cs => student(cs.studentId))
+  def firstNerd: Option[Student] = _courseStudent
+    .find(cs => isNerd(cs.grade))
+    .flatMap(cs => student(cs.studentId))
+
+
+  def firstNerdBetter: Option[Student] = nerds.headOption
 
   def secondNerd: Option[Student] = nerdIds.drop(1).headOption.flatMap(id => student(id))
 
@@ -156,7 +161,7 @@ object StudentsAnalyzer extends App {
     for {
       (courseId, courseStudents) <- _courseStudent.groupBy(_.courseId)
       c                          <- course(courseId)
-    } yield c -> students(courseStudents.map(_.studentId))
+    } yield c -> students(courseStudents.map(_.studentId).toSet)
 
   def nerdInAllCourses: Seq[Student] = _courseStudent
     .groupBy(_.studentId)
