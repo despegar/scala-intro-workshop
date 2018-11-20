@@ -2,14 +2,16 @@ package com.despegar.scala.workshop.soluciones.dia2
 
 import com.despegar.scala.workshop.dia2.{Purchase, User}
 
+import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 object UserCache {
 
-  def getUser(name: String): User = cached.getOrElse(name, UserRepository.getUser(name))
+  def getUser(name: String): User = _cache.getOrElseUpdate(name, UserRepository.getUser(name))
 
   // NO CAMBIAR
-  private val cached = Map(
+  private val _cache: mutable.Map[String, User] = TrieMap(
     "Matt" -> User("2", "Matt", "h4x3r@gmail.com"),
     "Clark" -> User("3", "Clark", "superman@gmail.com")
   )
@@ -24,12 +26,11 @@ object UserRepository {
   // NO CAMBIAR
   private val users = Map(
     "Richard" -> User("1", "Richard", "richard@gmail.com"),
-    "Matt" -> User("2", "Matt", "h4x3r@gmail.com"),
-    "Clark" -> User("3", "Clark", "superman@gmail.com"),
-    "Peter" -> User("4", "Peter", "parker@gmail.com"),
-    "Rob" -> User("5", "Rob", "king@gmail.com")
+    "Matt"    -> User("2", "Matt", "h4x3r@gmail.com"),
+    "Clark"   -> User("3", "Clark", "superman@gmail.com"),
+    "Peter"   -> User("4", "Peter", "parker@gmail.com"),
+    "Rob"     -> User("5", "Rob", "king@gmail.com")
   ).withDefault(key => throw new RuntimeException(s"User $key doesn't exist"))
-
 }
 
 object PurchaseRestClient {
@@ -53,9 +54,7 @@ object PurchaseRestClient {
 
   // NO CAMBIAR
   case class Response[T](statusCode: Int, body: T)
-
 }
-
 
 object AlfredRestClient {
 
@@ -69,7 +68,6 @@ object AlfredRestClient {
   ).withDefault(key => throw new RuntimeException(s"Currency $key doesn't exist"))
 
 }
-
 
 object UserService {
 
@@ -85,5 +83,4 @@ object UserService {
         }
       })
   }
-
 }

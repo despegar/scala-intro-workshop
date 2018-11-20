@@ -8,7 +8,7 @@ object StudentsAnalyzer extends App {
 
   val MinNerdGrade: BigDecimal = 9
 
-  private val _students: List[Student] = List(
+  val _students: List[Student] = List(
     Student(id = 1, "Bob", age = 21),
     Student(id = 2, "Alice", age = 20),
     Student(id = 3, "Tom", age = 23),
@@ -19,7 +19,7 @@ object StudentsAnalyzer extends App {
     Student(id = 8, "John", age = 21),
     Student(id = 9, "Carl", age = 21))
 
-  private val _courses: List[Course] = List(
+  val _courses: List[Course] = List(
     Course(id = 1, "Java"),
     Course(id = 2, "Scala"),
     Course(id = 3, "Kotlin"),
@@ -29,7 +29,7 @@ object StudentsAnalyzer extends App {
     Course(id = 7, "Python"),
     Course(id = 8, "Haskell"))
 
-  private val _courseStudent: List[CourseStudent] = List(
+  val _courseStudent: List[CourseStudent] = List(
     CourseStudent(courseId = 1, studentId = 1, grade = 7.5),
     CourseStudent(courseId = 1, studentId = 2, grade = 8.6),
     CourseStudent(courseId = 1, studentId = 3, grade = 9.5),
@@ -114,6 +114,11 @@ object StudentsAnalyzer extends App {
     * nerd in position N, sorted by grade
     */
   def topNerdAtPosition(n: Int): Option[Student] = ???
+
+  /**
+    * nerd position of a given student ID
+    */
+  def nerdPosition(id: Int): Option[Int] = ???
 
   /**
     * first N nerds, sorted by grade

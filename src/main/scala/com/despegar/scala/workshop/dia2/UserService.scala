@@ -1,14 +1,13 @@
 package com.despegar.scala.workshop.dia2
 
+import scala.collection.concurrent.TrieMap
+import scala.collection.mutable
+
 /**
   * Implementar los métodos que faltan, o mejorar los ya implementados.
-  *
-  * No modificar firma de metodos, salvo el tipo de retorno
-  *
+  * No modificar la firma de los metodos, salvo el tipo de retorno
   * Agregar tipo de retorno a todos los métodos que no lo tengan, utilizar el que crea mas conveniente
-  *
   * Los precios de Purchase están en Dólares
-  *
   * ¿Cómo utilizaría los métodos de UserService?
   */
 
@@ -25,7 +24,8 @@ case class Purchase(amount: BigDecimal, description: String)
 object UserCache {
 
   /**
-    * Devuelve un usuario de _cached si existe
+    * Devuelve un usuario de _cache si existe
+    * Si no, va a la base (UserRepository) y después actualiza la cache
     * @param userName Name of user
     * @return ?
     */
@@ -35,8 +35,9 @@ object UserCache {
     * NO CAMBIAR!!
     *
     * Para usarlo, buscar como se obtiene una valor de un mapa en Scala
+    * Y como se actualiza un valor en un TrieMap
     */
-  private val _cached = Map(
+  private val _cache: mutable.Map[String, User] = TrieMap(
     "Matt" -> User("2", "Matt", "h4x3r@gmail.com"),
     "Clark" -> User("3", "Clark", "superman@gmail.com")
   )
@@ -45,7 +46,7 @@ object UserCache {
 object UserRepository {
 
   /**
-    * Busca el usuario en la base (user usersFakeDB)
+    * Busca el usuario en la base (user _getUsersViaFakeDB)
     * @param userName Name of user
     * @return ?
     */
@@ -122,16 +123,8 @@ object AlfredRestClient {
 object UserService {
 
   /**
-    * Devuelve todos los usuarios de la base
-    * @return
-    */
-  def getUsers = ???
-
-  /**
     * Devuelve un usuario
-    * Busca el usuario en la cache, y si no está, lo busca en la base
-    * O directamente cambiar el cache para que si no tiene el usuario, que vaya a la base,
-    * y desde aca solo se llama al cache
+    * Obtiene el usuario mediante la cache
     * @param userName Name of user
     * @return
     */
