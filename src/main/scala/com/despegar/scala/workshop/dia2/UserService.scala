@@ -1,7 +1,6 @@
 package com.despegar.scala.workshop.dia2
 
 import scala.collection.concurrent.TrieMap
-import scala.collection.mutable
 
 /**
   * Implementar los métodos que faltan, o mejorar los ya implementados.
@@ -26,6 +25,9 @@ object UserCache {
   /**
     * Devuelve un usuario de _cache si existe
     * Si no, va a la base (UserRepository) y después actualiza la cache
+    *
+    * Hint: el userName puede no existir
+    *
     * @param userName Name of user
     * @return ?
     */
@@ -37,7 +39,7 @@ object UserCache {
     * Para usarlo, buscar como se obtiene una valor de un mapa en Scala
     * Y como se actualiza un valor en un TrieMap
     */
-  private val _cache: mutable.Map[String, User] = TrieMap(
+  private val _cache: TrieMap[String, User] = TrieMap(
     "Matt" -> User("2", "Matt", "h4x3r@gmail.com"),
     "Clark" -> User("3", "Clark", "superman@gmail.com")
   )
@@ -46,17 +48,14 @@ object UserCache {
 object UserRepository {
 
   /**
-    * Busca el usuario en la base (user _getUsersViaFakeDB)
+    * Busca el usuario en la base (usar como si fuera la base _getUsersViaFakeDB)
+    *
+    * Hint: La base puede tirar excepción
+    *
     * @param userName Name of user
     * @return ?
     */
   def getUser(userName: String) = ???
-
-  /**
-    * Devuelve todos los usuarios (user usersFakeDB)
-    * @return ?
-    */
-  def getUsers = ???
 
   /**
     * NO CAMBIAR!!
@@ -77,6 +76,14 @@ object UserRepository {
 
 object PurchaseRestClient {
 
+  /**
+    * Usar _getPurchaseViaFakeHttp
+    *
+    * Hint: _getPurchaseViaFakeHttp puede devolver response que no sean 200, e incluso tirar excepción.
+    *
+    * @param user
+    * @return
+    */
   def getPurchases(user: User) = ???
 
   /**
@@ -88,10 +95,10 @@ object PurchaseRestClient {
   private def _getPurchaseViaFakeHttp(userId: String): Response[List[Purchase]] = {
     userId match {
       case "1" => throw new RuntimeException("Socket ERROR")
-      case "2" => Response(500, null)
-      case "3" => Response(422, null)
-      case "4" => Response(200, Purchase(450, "Hotel") :: Purchase(450, "Hotel") :: Purchase(800, "Flight") :: Nil)
-      case "5" => Response(200, Purchase(500, "Hotel") :: Nil)
+      case "2" => Response(statusCode = 500, body = null)
+      case "3" => Response(statusCode = 422, null)
+      case "4" => Response(statusCode = 200, Purchase(450, "Hotel") :: Purchase(450, "Hotel") :: Purchase(800, "Flight") :: Nil)
+      case "5" => Response(statusCode = 200, Purchase(500, "Hotel") :: Nil)
     }
   }
 
@@ -109,10 +116,18 @@ object PurchaseRestClient {
 
 object AlfredRestClient {
 
+  /**
+    * Usar _USDrate
+    *
+    * Hint: _USDrate tira excepción si no encuentra la moneda dada
+    *
+    * @param currency
+    * @return
+    */
   def getRate(currency: String) = ???
 
   // NO CAMBIAR
-  private val USDrate = Map(
+  private val _USDrate = Map(
     "ARS" -> 40,
     "BRL" -> 4,
     "CLP" -> 660

@@ -85,9 +85,6 @@ object StudentsAnalyzer extends App {
     */
   def isNerd(grade: BigDecimal): Boolean = ???
 
-  /**
-    * It must not have repeat students
-    */
   def courseStudentNerds: Seq[CourseStudent] = ???
 
   def nerdIds: Set[Int] = ???
